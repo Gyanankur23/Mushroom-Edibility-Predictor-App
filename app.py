@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 import time
 
-st.set_page_config(page_title="Mushroom ML Predictor", layout="wide")
+st.set_page_config(page_title="Mushroom ML Dashboard", layout="wide")
 
 st.markdown(
     """
@@ -66,12 +66,27 @@ if prediction == 1:
 else:
     st.error(f"Predicted: Poisonous (Confidence {prob:.2f})")
 
+st.subheader("Training Data Distribution")
+fig1, ax1 = plt.subplots()
+df["edible"].value_counts().plot.pie(autopct="%1.1f%%", colors=["green","red"], ax=ax1)
+ax1.set_ylabel("")
+ax1.set_title("Edible vs Poisonous")
+st.pyplot(fig1)
+
+st.subheader("Feature Importance")
+feature_importances = model.feature_importances_
+fig2, ax2 = plt.subplots()
+ax2.bar(X_encoded.columns, feature_importances, color="teal")
+ax2.set_title("Feature Importance")
+st.pyplot(fig2)
+
+st.subheader("Live Probability Fluctuations")
 placeholder = st.empty()
 for i in range(30):
     noise = np.random.randn(len(X_encoded)) * 0.05
-    fig, ax = plt.subplots()
-    ax.plot(range(len(X_encoded)), model.predict_proba(X_encoded)[:,1] + noise, color="blue", label="Edibility Probability")
-    ax.set_ylim(0, 1)
-    ax.legend()
-    placeholder.pyplot(fig)
+    fig3, ax3 = plt.subplots()
+    ax3.plot(range(len(X_encoded)), model.predict_proba(X_encoded)[:,1] + noise, color="blue", label="Edibility Probability")
+    ax3.set_ylim(0, 1)
+    ax3.legend()
+    placeholder.pyplot(fig3)
     time.sleep(0.1)
